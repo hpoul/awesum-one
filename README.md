@@ -19,3 +19,7 @@ But nothing is here right now :-)
     * apollo client: https://github.com/apollographql/apollo-android
     * apollo with kotlin: https://speakerdeck.com/heyitsmohit/graphql-with-kotlin
 
+## IDEA
+
+On welcome screen select 'Import Project', select directory and make
+sure to select gradle configuration, using gradle wrapper.
