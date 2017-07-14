@@ -1,4 +1,6 @@
 
+import { URL } from 'url';
+
 export namespace GithubConfig {
     export const ApiUrl = 'https://api.github.com';
 
@@ -13,6 +15,8 @@ export class GithubRepository {
     //
     // }
 
+    private static readonly urlMatcher = new RegExp('https?://github.com/([^/]+)/([^/]+)');
+
     constructor(
         readonly owner: string,
         readonly name: string
@@ -21,8 +25,12 @@ export class GithubRepository {
     }
 
     static fromPath(path: string) {
-        const [owner, name] = path.split('/');
+        const [owner, name] = path.replace(/^\/+/, '').split('/');
         return new GithubRepository(owner, name);
+    }
+
+    static fromUrl(url: string) {
+        return GithubRepository.fromPath(new URL(url).pathname);
     }
 
     get path(): string { return `${this.owner}/${this.name}`; }

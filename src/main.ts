@@ -1,18 +1,29 @@
-
-
 import {AwesomeLoader} from "./AwesomeLoader";
 import {GithubRepository} from "./GithubData";
+import winston = require('winston');
+import {logger} from "./logging";
+import * as jsyaml from "js-yaml";
 
 const awesomeAwesome = GithubRepository.fromPath('sindresorhus/awesome');
+const awesomeAndroid = GithubRepository.fromUrl('https://github.com/JStumpp/awesome-android');
 
-function hello(compiler: string) {
+winston.cli();
+
+function main() {
     const loader = new AwesomeLoader();
     (async () => {
-        loader.loadAwesomeMetaList(awesomeAwesome);
+        try {
+            logger.debug('Starting loading.');
+            const list = await loader.loadAwesomeList(awesomeAndroid);
+            logger.info('Got list: ', list);
+            logger.debug('as yaml: ' + jsyaml.safeDump(list));
+        } catch (error) {
+            logger.error("Error while loading awesome list.", error);
+        }
     })().then(() => {
-        console.log('all done.');
+        logger.info('all done.');
     });
-    console.log(`Hello from ${compiler}`);
 }
-hello("TypeScript");
+
+main();
 
