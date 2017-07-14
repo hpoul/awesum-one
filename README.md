@@ -10,6 +10,7 @@ But nothing is here right now :-)
 
 * Kotlin setup with gradle
 * Download awesome meta list
+    * https://github.com/sindresorhus/awesome
 * Store a list of awesome awesome lists.
     * Storage with yaml and jackson? https://www.mkammerer.de/blog/kotlin-and-yaml-part-2/
 * Store a list of awesome lists
