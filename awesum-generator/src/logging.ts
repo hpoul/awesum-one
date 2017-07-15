@@ -23,6 +23,7 @@ export namespace logger {
         winstonLogger.info.apply(winstonLogger, formatLogArguments(arguments))
     };
 
+    // noinspection JSUnusedGlobalSymbols
     export const warn = function (...args: any[]) {
         winstonLogger.warn.apply(winstonLogger, formatLogArguments(arguments))
     };
@@ -31,6 +32,7 @@ export namespace logger {
         winstonLogger.error.apply(winstonLogger, formatLogArguments(arguments))
     };
 
+    // noinspection JSUnusedGlobalSymbols
     export const stream = winstonLogger.stream;
 }
 

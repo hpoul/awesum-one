@@ -1,0 +1,22 @@
+
+$buttonColor: #b3ffc4;
+
+.awesome-index {
+  list-style: none;
+
+  li {
+    display: inline-block;
+    padding: 4px;
+    background-color: $buttonColor;
+    margin: 0 8px;
+    cursor: pointer;
+
+    &:hover {
+      background-color: darken($buttonColor, 20%);
+    }
+
+    &.selected {
+      background-color: darken($buttonColor, 50%);
+    }
+  }
+}

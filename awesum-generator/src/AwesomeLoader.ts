@@ -1,9 +1,8 @@
-
 import 'request-promise-native'
-import requestPromise = require("request-promise-native");
-import {GithubRepository} from "./GithubData";
-import base64 = require('base-64');
 import {logger} from "./logging";
+import requestPromise = require("request-promise-native");
+import base64 = require('base-64');
+import {AwesomeItem, GithubRepository, MarkdownHeadline} from "./lib/shared/AwesomeListInfo";
 
 class AwesomeList {
     items: AwesomeItem[] = [];
@@ -12,22 +11,6 @@ class AwesomeList {
     }
 }
 
-export class AwesomeItem {
-    constructor(
-        public readonly repository: GithubRepository,
-        public title: string,
-        public category: MarkdownHeadline|null,
-    ) {
-
-    }
-}
-
-interface MarkdownHeadline {
-    parent: MarkdownHeadline|null,
-    text: string;
-    level: number;
-    position: number;
-}
 
 export class AwesomeLoader {
 
@@ -53,14 +36,23 @@ export class AwesomeLoader {
         while (match = regex.exec(markdown)) {
             const [, levelString, title] = match;
             const level = levelString.length;
+
+            const cleanTitle = title.replace(/\[.*?\]\(.*?\)/g, '');
+            if (!cleanTitle) {
+                continue;
+            }
+
             if (lastLevel === level) {
                 if (parent) {
                     parent = parent.parent;
                 }
-            } else if (lastLevel < level) {
+            } else if (lastLevel < level && ret.length > 0) {
                 parent = ret[ret.length-1];
+                while (parent && level <= parent.level) {
+                    parent = parent.parent;
+                }
             }
-            ret.push({ parent: parent, level: level, position: regex.lastIndex, text: title });
+            ret.push({ parent: parent, level: level, position: regex.lastIndex, text: cleanTitle });
         }
         return ret;
     }

@@ -1,13 +1,15 @@
 import {AwesomeLoader} from "./AwesomeLoader";
-import {GithubRepository} from "./GithubData";
 import {logger} from "./logging";
 import * as jsyaml from "js-yaml";
 import winston = require('winston');
 import fsExtra = require('fs-extra');
 import * as path from "path";
+import {AwesomeIndexData, AwesomeListStoredData, AwesumConfig, GithubRepository} from './lib/shared/AwesomeListInfo';
 
-const awesomeAwesome = GithubRepository.fromPath('sindresorhus/awesome');
-const awesomeAndroid = GithubRepository.fromUrl('https://github.com/JStumpp/awesome-android');
+const awesomeLists = [
+    GithubRepository.fromUrl('https://github.com/dzharii/awesome-typescript'),
+    GithubRepository.fromUrl('https://github.com/JStumpp/awesome-android'),
+];
 
 const outputDirectory = path.join(__dirname, '../out/');
 
@@ -19,13 +21,22 @@ function main() {
     (async () => {
         try {
             logger.debug('Starting loading.');
-            const list = await loader.loadAwesomeList(awesomeAndroid);
-            logger.info('Got list: ', list);
+            let stored = await Promise.all(awesomeLists.map(async awesomeList => {
+                const list = await loader.loadAwesomeList(awesomeList);
+                logger.info('Got list: ', list);
 
-            await fsExtra.mkdirs(outputDirectory);
-            await fsExtra.writeFile(path.join(outputDirectory, 'awesum.yaml'), jsyaml.safeDump(list));
+                await fsExtra.mkdirs(outputDirectory);
+                await fsExtra.writeFile(path.join(outputDirectory, awesomeList.saveFileName), jsyaml.safeDump(list));
 
-            logger.info(`written into ${outputDirectory}`);
+                logger.info(`written into ${outputDirectory}`);
+                return <AwesomeListStoredData> {
+                    title: '',
+                    saveFile: awesomeList.saveFileName,
+                    repository: awesomeList
+                };
+            }));
+            let index: AwesomeIndexData = { stored: stored };
+            await fsExtra.writeFile(path.join(outputDirectory, AwesumConfig.awesumIndexFileName), jsyaml.safeDump(index));
         } catch (error) {
             logger.error("Error while loading awesome list.", error);
         }
