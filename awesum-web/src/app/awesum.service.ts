@@ -10,9 +10,13 @@ import {
 } from './lib/shared/AwesomeListInfo';
 import * as path from 'path';
 import * as moment from 'moment';
+import {Subject} from 'rxjs/Subject';
+import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 
 @Injectable()
 export class AwesumService {
+
+  awesumIndexRequestSubject: BehaviorSubject<AwesomeList[]> = null;
 
   constructor(private http: Http) { }
 
@@ -25,11 +29,30 @@ export class AwesumService {
       });
   }
 
-  getAwesumIndex(): Observable<AwesomeIndexData> {
-    return this.http.get(path.join('/assets/generator-out', AwesumConfig.awesumIndexFileName))
+  getAwesumIndex(): Subject<AwesomeList[]> {
+    if (this.awesumIndexRequestSubject != null) {
+      return this.awesumIndexRequestSubject;
+    }
+    this.awesumIndexRequestSubject = new BehaviorSubject(null);
+    this.http.get(path.join('/assets/generator-out', AwesumConfig.awesumIndexFileName))
       .map((res) => {
         return jsyaml.safeLoad(res.text());
-      });
+      })
+      .map(data => data.stored.map(list => new AwesomeList(list)))
+      .subscribe(value => this.awesumIndexRequestSubject.next(value),
+        error => this.awesumIndexRequestSubject.error(error));
+    return this.awesumIndexRequestSubject;
+  }
+}
+
+export class AwesomeList implements AwesomeListStoredData {
+  title: string;
+  repository: GithubRepository;
+  saveFile: string;
+
+  constructor(data: AwesomeListStoredData) {
+    Object.assign(this, data);
+    this.repository = new GithubRepository(data.repository.owner, data.repository.name);
   }
 
 }

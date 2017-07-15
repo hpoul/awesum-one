@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {AwesomeInfo, AwesumService} from './awesum.service';
+import {AwesomeInfo, AwesomeList, AwesumService} from './awesum.service';
 import {AwesomeIndexData, AwesomeListStoredData} from './lib/shared/AwesomeListInfo';
 
 @Component({
@@ -9,35 +9,22 @@ import {AwesomeIndexData, AwesomeListStoredData} from './lib/shared/AwesomeListI
 })
 export class AppComponent implements OnInit {
   title = 'awesum.one';
-  list: AwesomeInfo[];
-  selectedList: AwesomeListStoredData;
+
+  index: AwesomeList[];
   errorMessage: string;
-  index: AwesomeIndexData;
 
-  constructor(private awesumService: AwesumService) {}
+  constructor(private awesumService: AwesumService) {
+  }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.getIndex();
   }
 
-  getList(listData: AwesomeListStoredData) {
-    return this.awesumService.getList(listData)
-      .subscribe(
-        list => this.list = list,
-        error => this.errorMessage = <any>error
-      );
-  }
-
-  getIndex() {
+  private getIndex() {
     return this.awesumService.getAwesumIndex()
       .subscribe(
         index => this.index = index,
         error => this.errorMessage = <any>error
       );
-  }
-
-  selectList(list: AwesomeListStoredData) {
-    this.selectedList = list;
-    this.getList(list);
   }
 }

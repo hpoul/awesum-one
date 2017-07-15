@@ -2,35 +2,17 @@
   Welcome to <a href="https://awesum.one/">{{title}}</a>!
 </h1>
 
-<ng-container *ngIf="errorMessage">
-  {{ errorMessage }}
-</ng-container>
+<p>Nothing to see here (yet)!</p>
 
-<ul class="awesome-index" *ngIf="index">
-  <li *ngFor="let list of index.stored" (click)="selectList(list)" [class.selected]="list === selectedList">
-    {{ list.title }} - {{ list.repository.name }}
-  </li>
-</ul>
+<nav>
+  <ul class="awesome-index" *ngIf="index">
+    <li routerLinkActive="selected"><a routerLink="/home" >Home</a></li>
+    <li *ngFor="let list of index" routerLinkActive="selected">
+      <a [routerLink]="['/list', list.repository.owner, list.repository.name]">{{ list.repository.name }}</a>
+    </li>
+  </ul>
+</nav>
 
-<div *ngIf="list">
-  <table style="max-width: 100%">
-    <thead>
-      <tr>
-        <th>Category</th>
-        <th>Name</th>
-        <th>Repository</th>
-        <th>Stars</th>
-        <th>Updated</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let item of list">
-        <td>{{ item.categoryInfo && item.categoryInfo.fullPath }}</td>
-        <td>{{ item.title }}</td>
-        <td><a href="{{ item.repository.githubMainUrl }}" target="_blank">{{ item.repository.path }}</a></td>
-        <td class="stars-count">{{ item.infoData.stargazers_count }}</td>
-        <td style="white-space: nowrap">{{ item.lastUpdatedAt }}</td>
-      </tr>
-    </tbody>
-  </table>
-</div>
+
+<router-outlet></router-outlet>
+

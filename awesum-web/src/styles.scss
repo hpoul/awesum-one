@@ -2,4 +2,15 @@
 
 body {
   font-family: 'Open Sans', sans-serif;
+  color: #333;
+  background-color: #fefefe;
+}
+
+a {
+  color: blue;
+  text-decoration: none;
+
+  &:visited {
+    color: blue;
+  }
 }
