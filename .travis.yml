@@ -1,0 +1,12 @@
+language: node_js
+
+script: ./.buildall.sh
+
+deploy:
+  provider: pages
+  local_dir: awesum-web/dist
+  skip_cleanup: true
+  github_token: $GITHUB_TOKEN # Set in travis-ci.org dashboard
+  on:
+    branch: gh-pages
+
