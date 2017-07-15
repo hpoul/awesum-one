@@ -1,6 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { MdModule } from 'ng2-md';
 
 import { AppComponent } from './app.component';
 import {HttpModule} from '@angular/http';
@@ -28,6 +29,7 @@ const appRoutes: Routes = [
     BrowserModule,
     HttpModule,
     RouterModule.forRoot(appRoutes, { enableTracing: true }),
+    MdModule,
   ],
   providers: [AwesumService],
   bootstrap: [AppComponent]

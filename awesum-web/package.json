@@ -24,8 +24,10 @@
     "core-js": "^2.4.1",
     "js-yaml": "^3.9.0",
     "moment": "^2.18.1",
+    "ng2-md": "^2.2.0",
     "path": "^0.12.7",
     "rxjs": "^5.1.0",
+    "showdown": "^1.7.1",
     "typeface-open-sans": "0.0.31",
     "zone.js": "^0.8.4"
   },
