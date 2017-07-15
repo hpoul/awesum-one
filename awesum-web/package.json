@@ -25,6 +25,7 @@
     "js-yaml": "^3.9.0",
     "path": "^0.12.7",
     "rxjs": "^5.1.0",
+    "typeface-open-sans": "0.0.31",
     "zone.js": "^0.8.4"
   },
   "devDependencies": {

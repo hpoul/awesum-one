@@ -2,7 +2,9 @@
   Welcome to <a href="https://awesum.one/">{{title}}</a>!
 </h1>
 
-blubb {{ errorMessage }}
+<ng-container *ngIf="errorMessage">
+  {{ errorMessage }}
+</ng-container>
 
 <ul class="awesome-index" *ngIf="index">
   <li *ngFor="let list of index.stored" (click)="selectList(list)" [class.selected]="list === selectedList">

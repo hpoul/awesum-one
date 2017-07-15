@@ -5,6 +5,9 @@ import { AppComponent } from './app.component';
 import {HttpModule} from '@angular/http';
 import { AwesumService } from './awesum.service';
 
+// Load Open Sans typeface
+import 'typeface-open-sans';
+
 @NgModule({
   declarations: [
     AppComponent

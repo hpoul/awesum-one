@@ -19,7 +19,8 @@
       "testTsconfig": "tsconfig.spec.json",
       "prefix": "awesum",
       "styles": [
-        "styles.scss"
+        "styles.scss",
+        "../node_modules/typeface-open-sans/index.css"
       ],
       "scripts": [],
       "environmentSource": "environments/environment.ts",
