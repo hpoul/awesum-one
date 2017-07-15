@@ -5,9 +5,11 @@ import * as jsyaml from 'js-yaml';
 import 'rxjs/add/operator/map';
 import {
   AwesomeCategory, AwesomeIndexData, AwesomeItem, AwesomeListStoredData, AwesumConfig, GithubRepository,
+  GithubRepositoryInfoData,
   MarkdownHeadline
 } from './lib/shared/AwesomeListInfo';
 import * as path from 'path';
+import * as moment from 'moment';
 
 @Injectable()
 export class AwesumService {
@@ -33,13 +35,19 @@ export class AwesumService {
 }
 
 export class AwesomeInfo implements AwesomeItem {
+  infoData: GithubRepositoryInfoData;
   repository: GithubRepository;
   title: string;
   category: MarkdownHeadline | null;
   categoryInfo: AwesomeCategory | null;
 
+  get lastUpdatedAt() {
+    return moment(this.infoData.updated_at).format('YYYY-MM-DD hh:mm');
+  }
+
   constructor(item: AwesomeItem) {
     Object.assign(this, item);
+    this.repository = new GithubRepository(item.repository.owner, item.repository.name);
 
     if (item.category) {
       this.categoryInfo = new AwesomeCategory(item.category);

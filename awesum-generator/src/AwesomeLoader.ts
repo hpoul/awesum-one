@@ -1,8 +1,14 @@
 import 'request-promise-native'
-import {logger} from "./logging";
-import requestPromise = require("request-promise-native");
+import {logger} from './logging';
+import {AwesomeItem, GithubRepository, GithubRepositoryInfoData, MarkdownHeadline} from './lib/shared/AwesomeListInfo';
+import * as path from 'path';
+import requestPromise = require('request-promise-native');
 import base64 = require('base-64');
-import {AwesomeItem, GithubRepository, MarkdownHeadline} from "./lib/shared/AwesomeListInfo";
+import crypto = require('crypto');
+import fsExtra = require('fs-extra');
+
+const cacheDirectory = path.join(__dirname, '../cache/');
+
 
 class AwesomeList {
     items: AwesomeItem[] = [];
@@ -11,15 +17,79 @@ class AwesomeList {
     }
 }
 
+interface StupidCacheItem {
+    updatedAt: number,
+    value: any,
+}
+
+class StupidCache {
+    constructor() {
+        fsExtra.mkdirsSync(cacheDirectory);
+    }
+
+    async put(key: string, value: any) {
+        if (!value) {
+            throw new Error('Wanting to store null value!');
+        }
+        return await fsExtra.writeJson(
+            path.join(cacheDirectory, hash(key)),
+            <StupidCacheItem> { updatedAt: new Date().getTime(), value: value });
+    }
+
+    async get(key: string) {
+        const keyHash = hash(key);
+        try {
+            let item: StupidCacheItem = await fsExtra.readJson(path.join(cacheDirectory, keyHash));
+            return item.value;
+        } catch (err) {
+            if (err instanceof Error && (<any>err).code === 'ENOENT') {
+                return null;
+            }
+            throw err;
+        }
+    }
+}
+
+/**
+ * Turns a set of values into a HEX hash code.
+ * @param value: The set of values to hash.
+ * @return {String} or undefined.
+ */
+export const hash = (value: string) => {
+    //const resultHash = crypto.createHash('md5');
+    const resultHash = crypto.createHash('sha1');
+    resultHash.update(value);
+    return resultHash.digest('hex');
+};
+
+
+const defaultHeaders = {
+    'User-Agent': 'hpoul',
+    'Authorization': process.env.GITHUB_AUTH_TOKEN && `token ${process.env.GITHUB_AUTH_TOKEN}`,
+};
+const defaultArgs = {
+    'headers': defaultHeaders,
+    json: true,
+};
 
 export class AwesomeLoader {
 
+    private cache = new StupidCache();
 
     private async loadReadme(repository: GithubRepository) {
         logger.debug(`loading readme from ${repository.readmeUrl}.`);
-        const response = await requestPromise(repository.readmeUrl, {headers: {'User-Agent': 'hpoul'}, json: true});
+        const response = await requestPromise(repository.readmeUrl, defaultArgs);
         logger.debug('response: ', typeof response, response.name);
         return base64.decode(response.content);
+    }
+
+    private async loadRepositoryInfo(repository: GithubRepository) : Promise<GithubRepositoryInfoData> {
+        const cached = await this.cache.get(repository.path);
+        if (cached) return cached;
+        logger.debug(`Loading infos for ${repository.path}.`);
+        const ret = await requestPromise(repository.infoUrl, defaultArgs);
+        this.cache.put(repository.path, ret).then(() => {});
+        return ret;
     }
 
     async loadAwesomeMetaList(metaList: GithubRepository) {
@@ -81,8 +151,12 @@ export class AwesomeLoader {
         while (match = regex.exec(readme)) {
             const [, title, url] = match;
             const headline = this.findClosestHeadline(headlines, regex.lastIndex);
-            list.items.push(new AwesomeItem(GithubRepository.fromUrl(url), title, headline));
+
+            const item = new AwesomeItem(GithubRepository.fromUrl(url), title, headline);
+            item.infoData = await this.loadRepositoryInfo(item.repository);
+            list.items.push(item);
         }
+
         return list;
     }
 }

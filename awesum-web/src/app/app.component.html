@@ -13,7 +13,24 @@
 </ul>
 
 <div *ngIf="list">
-  <ul>
-    <li *ngFor="let item of list">{{ item.category && item.categoryInfo.fullPath }}: {{ item.title }}</li>
-  </ul>
+  <table style="max-width: 100%">
+    <thead>
+      <tr>
+        <th>Category</th>
+        <th>Name</th>
+        <th>Repository</th>
+        <th>Stars</th>
+        <th>Updated</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of list">
+        <td>{{ item.categoryInfo && item.categoryInfo.fullPath }}</td>
+        <td>{{ item.title }}</td>
+        <td><a href="{{ item.repository.githubMainUrl }}" target="_blank">{{ item.repository.path }}</a></td>
+        <td class="stars-count">{{ item.infoData.stargazers_count }}</td>
+        <td style="white-space: nowrap">{{ item.lastUpdatedAt }}</td>
+      </tr>
+    </tbody>
+  </table>
 </div>

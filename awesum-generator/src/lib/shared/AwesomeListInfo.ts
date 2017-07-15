@@ -34,16 +34,37 @@ export class GithubRepository implements GithubRepositoryData {
         return GithubRepository.fromPath(new URL(url).pathname);
     }
 
+    get githubMainUrl() { return `https://github.com/${this.path}`}
+
     get path(): string { return `${this.owner}/${this.name}`; }
 
+    get infoUrl(): string {
+        return `${GithubConfig.ApiUrl}/repos/${this.path}`;
+    }
+
     get readmeUrl(): string {
-        return `${GithubConfig.ApiUrl}/repos/${this.path}/readme`
+        return `${GithubConfig.ApiUrl}/repos/${this.path}/readme`;
     }
 
     get saveFileName(): string {
         return `${this.owner}__${this.name}.yaml`;
     }
 
+}
+
+export interface GithubRepositoryInfoData {
+    id: number,
+
+    subscribers_count: number,
+    watchers_count: number,
+    stargazers_count: number,
+
+    created_at: string,
+    updated_at: string,
+    pushed_at: string,
+
+    homagepage: string|null,
+    description: string,
 }
 
 export interface AwesomeIndexData {
@@ -57,6 +78,8 @@ export interface AwesomeListStoredData {
 }
 
 export class AwesomeItem {
+    infoData: GithubRepositoryInfoData;
+
     constructor(
         public readonly repository: GithubRepository,
         public title: string,
