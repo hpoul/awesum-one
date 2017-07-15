@@ -1,0 +1,11 @@
+stored:
+  - title: ''
+    saveFile: dzharii__awesome-typescript.yaml
+    repository:
+      owner: dzharii
+      name: awesome-typescript
+  - title: ''
+    saveFile: JStumpp__awesome-android.yaml
+    repository:
+      owner: JStumpp
+      name: awesome-android
